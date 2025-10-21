@@ -1,9 +1,12 @@
 import express, { type Express } from "express";
 import { ENV_CONSTANTS } from "./constants";
 import { connectToDatabase } from "./config";
+import router from "./routes/index.routes";
 
 const app: Express = express();
 const PORT: number = ENV_CONSTANTS.PORT;
+
+app.use("/", router);
 
 (() => {
   try {
