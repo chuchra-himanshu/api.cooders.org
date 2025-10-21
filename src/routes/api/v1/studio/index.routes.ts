@@ -1,8 +1,8 @@
 import express, { type Router } from "express";
-import studioRouter from "./studio/index.routes";
+import libraryRouter from "./library.routes";
 
 const router: Router = express.Router();
 
-router.use("/studio", studioRouter);
+router.use("/libraries", libraryRouter);
 
 export default router;
