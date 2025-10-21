@@ -43,9 +43,57 @@ const createLibrary = asyncHandler(async (req: Request, res: Response) => {
   );
 });
 
-const getLibrary = asyncHandler(async (req: Request, res: Response) => {});
+const getLibrary = asyncHandler(async (req: Request, res: Response) => {
+  const { library_id } = req.params;
 
-const getLibraries = asyncHandler(async (req: Request, res: Response) => {});
+  if (!library_id) {
+    return res.status(403).json(
+      APIError.send({
+        status: 403,
+        message: "Please provide a valid library ID",
+      })
+    );
+  }
+
+  const library = await Library.findById(library_id);
+  if (!library) {
+    return res.status(500).json(
+      APIError.send({
+        status: 500,
+        message: "Something went wrong! Library not featched",
+      })
+    );
+  }
+
+  return res.status(200).json(
+    APIResponse.send({
+      status: 200,
+      message: "Library details fetched successfully",
+      data: library,
+    })
+  );
+});
+
+const getLibraries = asyncHandler(async (req: Request, res: Response) => {
+  const libraries = await Library.find();
+
+  if (!libraries) {
+    return res.status(500).json(
+      APIError.send({
+        status: 500,
+        message: "Something went wrong! Libraries not featched",
+      })
+    );
+  }
+
+  return res.status(200).json(
+    APIResponse.send({
+      status: 200,
+      message: "Libraries details fetched successfully",
+      data: libraries,
+    })
+  );
+});
 
 const updateLibrary = asyncHandler(async (req: Request, res: Response) => {});
 
