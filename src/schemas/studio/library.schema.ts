@@ -20,7 +20,7 @@ const librarySchema: Schema = new mongoose.Schema<LibrarySchemaInterface>(
       required: true,
       unique: true,
     },
-    isVisible: {
+    visibility: {
       type: Boolean,
       required: true,
       default: true,

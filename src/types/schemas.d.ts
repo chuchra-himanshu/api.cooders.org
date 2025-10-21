@@ -3,6 +3,6 @@ interface LibrarySchemaInterface {
   logo: string;
   platformURL: string;
   slug: string;
-  isVisible: boolean;
+  visibility: boolean;
   isDeleted: boolean;
 }
