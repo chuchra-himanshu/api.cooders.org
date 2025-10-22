@@ -95,7 +95,77 @@ const getLibraries = asyncHandler(async (req: Request, res: Response) => {
   );
 });
 
-const updateLibrary = asyncHandler(async (req: Request, res: Response) => {});
+const updateLibrary = asyncHandler(async (req: Request, res: Response) => {
+  const { title, logo, platformURL, slug, visibility } = req.body;
+
+  const { library_id } = req.params;
+
+  if (!library_id) {
+    return res.status(403).json(
+      APIError.send({
+        status: 403,
+        message: "Please provide a valid library ID",
+      })
+    );
+  }
+
+  const library = await Library.findById(library_id);
+  if (!library) {
+    return res.status(500).json(
+      APIError.send({
+        status: 500,
+        message: "Something went wrong! Library not featched",
+      })
+    );
+  }
+
+  if (library.title !== title || library.slug !== slug) {
+    const existingLibrary = await Library.findOne({
+      $or: [{ title }, { slug }],
+    });
+    if (existingLibrary) {
+      return res.status(409).json(
+        APIError.send({
+          status: 409,
+          message:
+            library.title !== title
+              ? "Title already taken, Please choose another"
+              : "Slug already taken, Please choose another",
+        })
+      );
+    }
+  }
+
+  const updatedLibrary = await Library.findByIdAndUpdate(
+    library_id,
+    {
+      title,
+      logo,
+      platformURL,
+      slug,
+      visibility,
+    },
+    {
+      new: true,
+    }
+  );
+
+  if (!updatedLibrary) {
+    return res.status(500).json(
+      APIError.send({
+        status: 500,
+        message: "Something went wrong! Library not updated",
+      })
+    );
+  }
+
+  return res.status(200).json(
+    APIResponse.send({
+      status: 200,
+      message: "Library updated successfully",
+    })
+  );
+});
 
 const deleteLibrary = asyncHandler(async (req: Request, res: Response) => {});
 
