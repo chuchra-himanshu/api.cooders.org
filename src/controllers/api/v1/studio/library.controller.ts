@@ -55,12 +55,12 @@ const getLibrary = asyncHandler(async (req: Request, res: Response) => {
     );
   }
 
-  const library = await Library.findById(library_id);
+  const library = await Library.findOne({ _id: library_id, isDeleted: false });
   if (!library) {
-    return res.status(500).json(
+    return res.status(404).json(
       APIError.send({
-        status: 500,
-        message: "Something went wrong! Library not featched",
+        status: 404,
+        message: "Library not found",
       })
     );
   }
@@ -75,13 +75,13 @@ const getLibrary = asyncHandler(async (req: Request, res: Response) => {
 });
 
 const getLibraries = asyncHandler(async (req: Request, res: Response) => {
-  const libraries = await Library.find();
+  const libraries = await Library.find({ isDeleted: false });
 
   if (!libraries) {
-    return res.status(500).json(
+    return res.status(404).json(
       APIError.send({
-        status: 500,
-        message: "Something went wrong! Libraries not featched",
+        status: 404,
+        message: "Libraries not found",
       })
     );
   }
@@ -111,10 +111,10 @@ const updateLibrary = asyncHandler(async (req: Request, res: Response) => {
 
   const library = await Library.findById(library_id);
   if (!library) {
-    return res.status(500).json(
+    return res.status(404).json(
       APIError.send({
-        status: 500,
-        message: "Something went wrong! Library not featched",
+        status: 404,
+        message: "Library not found",
       })
     );
   }
@@ -167,7 +167,38 @@ const updateLibrary = asyncHandler(async (req: Request, res: Response) => {
   );
 });
 
-const deleteLibrary = asyncHandler(async (req: Request, res: Response) => {});
+const deleteLibrary = asyncHandler(async (req: Request, res: Response) => {
+  const { library_id } = req.params;
+
+  if (!library_id) {
+    return res.status(403).json(
+      APIError.send({
+        status: 403,
+        message: "Please provide a valid library ID",
+      })
+    );
+  }
+
+  const library = await Library.findOne({ _id: library_id, isDeleted: false });
+  if (!library) {
+    return res.status(404).json(
+      APIError.send({
+        status: 404,
+        message: "Library not found!",
+      })
+    );
+  }
+
+  library.isDeleted = true;
+  await library.save();
+
+  return res.status(200).json(
+    APIResponse.send({
+      status: 200,
+      message: "Library deleted successfully",
+    })
+  );
+});
 
 export default {
   createLibrary,
