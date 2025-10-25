@@ -15,4 +15,5 @@ interface ComponentSchemaInterface {
   slug: string;
   visibility: boolean;
   deprecated: boolean;
+  isDeleted: boolean;
 }

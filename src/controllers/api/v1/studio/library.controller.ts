@@ -55,7 +55,11 @@ const getLibrary = asyncHandler(async (req: Request, res: Response) => {
     );
   }
 
-  const library = await Library.findOne({ _id: library_id, isDeleted: false });
+  const library = await Library.findOne({
+    _id: library_id,
+    isDeleted: false,
+    visibility: true,
+  });
   if (!library) {
     return res.status(404).json(
       APIError.send({
@@ -75,9 +79,9 @@ const getLibrary = asyncHandler(async (req: Request, res: Response) => {
 });
 
 const getLibraries = asyncHandler(async (req: Request, res: Response) => {
-  const libraries = await Library.find({ isDeleted: false });
+  const libraries = await Library.find({ isDeleted: false, visibility: true });
 
-  if (!libraries) {
+  if (!libraries || libraries.length === 0) {
     return res.status(404).json(
       APIError.send({
         status: 404,
